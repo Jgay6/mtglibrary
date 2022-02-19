@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && rmdir -Recurse -Force docs && move -Path build -Destination docs && rmdir -Recurse -Force build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write 'src/**/*.{ts,tsx,scss,css,json}'",
