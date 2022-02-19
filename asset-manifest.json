@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Jgay6/mtglibrary/static/css/main.f08686eb.css",
-    "main.js": "/Jgay6/mtglibrary/static/js/main.5a1d223b.js",
-    "static/js/787.7a8a1c0c.chunk.js": "/Jgay6/mtglibrary/static/js/787.7a8a1c0c.chunk.js",
-    "index.html": "/Jgay6/mtglibrary/index.html",
-    "main.f08686eb.css.map": "/Jgay6/mtglibrary/static/css/main.f08686eb.css.map",
-    "main.5a1d223b.js.map": "/Jgay6/mtglibrary/static/js/main.5a1d223b.js.map",
-    "787.7a8a1c0c.chunk.js.map": "/Jgay6/mtglibrary/static/js/787.7a8a1c0c.chunk.js.map"
+    "main.css": "/static/css/main.f08686eb.css",
+    "main.js": "/static/js/main.43057222.js",
+    "static/js/787.7a8a1c0c.chunk.js": "/static/js/787.7a8a1c0c.chunk.js",
+    "index.html": "/index.html",
+    "main.f08686eb.css.map": "/static/css/main.f08686eb.css.map",
+    "main.43057222.js.map": "/static/js/main.43057222.js.map",
+    "787.7a8a1c0c.chunk.js.map": "/static/js/787.7a8a1c0c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f08686eb.css",
-    "static/js/main.5a1d223b.js"
+    "static/js/main.43057222.js"
   ]
 }
