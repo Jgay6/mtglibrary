@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/mtglibrary/static/css/main.f08686eb.css",
-    "main.js": "/mtglibrary/static/js/main.a3f7702d.js",
+    "main.js": "/mtglibrary/static/js/main.3da4ae5b.js",
     "static/js/787.7a8a1c0c.chunk.js": "/mtglibrary/static/js/787.7a8a1c0c.chunk.js",
     "index.html": "/mtglibrary/index.html",
     "main.f08686eb.css.map": "/mtglibrary/static/css/main.f08686eb.css.map",
-    "main.a3f7702d.js.map": "/mtglibrary/static/js/main.a3f7702d.js.map",
+    "main.3da4ae5b.js.map": "/mtglibrary/static/js/main.3da4ae5b.js.map",
     "787.7a8a1c0c.chunk.js.map": "/mtglibrary/static/js/787.7a8a1c0c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f08686eb.css",
-    "static/js/main.a3f7702d.js"
+    "static/js/main.3da4ae5b.js"
   ]
 }
