@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Jgay6/mtglibrary/static/css/main.f08686eb.css",
+    "main.js": "/Jgay6/mtglibrary/static/js/main.5a1d223b.js",
+    "static/js/787.7a8a1c0c.chunk.js": "/Jgay6/mtglibrary/static/js/787.7a8a1c0c.chunk.js",
+    "index.html": "/Jgay6/mtglibrary/index.html",
+    "main.f08686eb.css.map": "/Jgay6/mtglibrary/static/css/main.f08686eb.css.map",
+    "main.5a1d223b.js.map": "/Jgay6/mtglibrary/static/js/main.5a1d223b.js.map",
+    "787.7a8a1c0c.chunk.js.map": "/Jgay6/mtglibrary/static/js/787.7a8a1c0c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f08686eb.css",
+    "static/js/main.5a1d223b.js"
+  ]
+}
