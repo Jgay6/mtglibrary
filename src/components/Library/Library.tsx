@@ -1,10 +1,12 @@
-import { Button, LinearProgress, Paper, Tooltip, Typography } from "@mui/material";
-import React, { useEffect, useState } from 'react';
+import { Button, Grid, LinearProgress, Paper, Tooltip, Typography } from "@mui/material";
+import React, { useEffect, useRef, useState } from 'react';
 import { DataGrid, GridColDef, GridOverlay, GridValueGetterParams } from '@mui/x-data-grid';
+import { CSVLink } from "react-csv";
 import { Card } from "scryfall-sdk";
 import { CardModel } from "../../model/Card.model";
 
 import LibraryModel from "../../model/Library.model";
+import { ExportUtility } from "../../utility/Export.utility";
 import Storage from "../../utility/Storage";
 import AutoComplete from "../Autocomplete/Autocomplete";
 import styles from './Library.module.scss';
@@ -12,8 +14,8 @@ import styles from './Library.module.scss';
 function CustomLoadingOverlay() {
     return (
         <GridOverlay>
-            <div style={{ position: 'absolute', top: 0, width: '100%' }}>
-                <LinearProgress />
+            <div style={{position: 'absolute', top: 0, width: '100%'}}>
+                <LinearProgress/>
             </div>
         </GridOverlay>
     );
@@ -23,27 +25,28 @@ interface LibraryProps {
 }
 
 const Library = (props: LibraryProps) => {
-    let lib: LibraryModel;
+    const [library, setLibrary] = useState<LibraryModel>({cards: []} as LibraryModel);
     const [data, setData] = useState<CardModel[]>(() => []);
     const [loading, setLoading] = useState<boolean>(false);
+    const ref = useRef<any>();
 
     useEffect(() => {
         setLoading(true);
         Storage.getLibrary()
         .then(value => {
-            lib = value;
+            setLibrary(value);
             setData(value.cards)
             setLoading(false);
         })
     }, []);
 
     const addCard = (card: Card) => {
-        if(data !== null) {
+        if (data !== null) {
             setLoading(true);
             let cardModel = card as CardModel;
             let indexFound = data.map(c => c.id).indexOf(card.id);
 
-            if(indexFound > -1) {
+            if (indexFound > -1) {
                 cardModel = data[indexFound];
                 cardModel.number++;
                 setData((prevRows) => {
@@ -62,13 +65,13 @@ const Library = (props: LibraryProps) => {
     }
 
     const decrease = (id: string) => {
-        if(data !== null) {
+        if (data !== null) {
             setLoading(true);
             let indexFound = data.map(c => c.id).indexOf(id);
-            if(indexFound > -1) {
+            if (indexFound > -1) {
                 let card = data[indexFound];
                 card.number--;
-                if(card.number <= 0) {
+                if (card.number <= 0) {
                     setData((prevRows) => {
                         const rowToDeleteIndex = data.findIndex(x => x.id === id);
                         let tab = [
@@ -89,10 +92,10 @@ const Library = (props: LibraryProps) => {
     }
 
     const increase = (id: string) => {
-        if(data !== null) {
+        if (data !== null) {
             setLoading(true);
             let indexFound = data.map(c => c.id).indexOf(id);
-            if(indexFound > -1) {
+            if (indexFound > -1) {
                 let card = data[indexFound];
                 card.number++;
                 setData((prevRows) => {
@@ -113,7 +116,7 @@ const Library = (props: LibraryProps) => {
                     title={
                         <React.Fragment>
                             {/*{JSON.stringify(params.row.image_uris)}*/}
-                            <img src={params.row.image_uris?.small} />
+                            <img src={params.row.image_uris?.small}/>
                         </React.Fragment>
                     }
                 >
@@ -133,14 +136,14 @@ const Library = (props: LibraryProps) => {
             headerName: 'Estimated price',
             width: 130,
             valueGetter: (params: GridValueGetterParams) =>
-                `${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(params.row.prices.eur)) || '0 €'}`,
+                `${new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'EUR'}).format(Number(params.row.prices.eur)) || '0 €'}`,
         },
         {
             field: 'estimated_price_total',
             headerName: 'Estimated price total',
             width: 130,
             valueGetter: (params: GridValueGetterParams) =>
-                `${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(params.row.prices.eur) * params.row.number) || '0 €'}`,
+                `${new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'EUR'}).format(Number(params.row.prices.eur) * params.row.number) || '0 €'}`,
         },
         {
             field: 'number',
@@ -155,47 +158,64 @@ const Library = (props: LibraryProps) => {
             )
 
         },
-        { field: 'decks', headerName: 'In decks', width: 130 },
+        {field: 'decks', headerName: 'In decks', width: 130},
     ];
 
     return (
         <div className={styles.Library}>
-            <Paper
-                sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    mb: 2
-                }}
-            >
-                <AutoComplete addCard={addCard}/>
-            </Paper>
-            <Paper
-                sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 680,
-                }}
-            >
-                    <DataGrid
-                        columns={columns}
-                        rows={data}
-                        initialState={{
-                            sorting: {
-                                sortModel: [{ field: 'name', sort: 'asc' }],
-                            },
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={9} lg={9}>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
                         }}
-                        components={{
-                            LoadingOverlay: CustomLoadingOverlay,
+                    >
+                        <AutoComplete addCard={addCard}/>
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} md={3} lg={3}>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
                         }}
-                        componentsProps={{ toolbar: { printOptions: { disableToolbarButton: true } } }}
-                        autoPageSize
-                        pagination
-                        disableSelectionOnClick
-                        loading={loading}
-                    />
-            </Paper>
+                    >
+                        <Button onClick={() => ref.current.link.click()}>Export to CSV</Button>
+                        <CSVLink {...ExportUtility.exportLibrary(library)} ref={ref}/>
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} md={12} lg={12}>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            height: 680,
+                        }}
+                    >
+                        <DataGrid
+                            columns={columns}
+                            rows={data}
+                            initialState={{
+                                sorting: {
+                                    sortModel: [{field: 'name', sort: 'asc'}],
+                                },
+                            }}
+                            components={{
+                                LoadingOverlay: CustomLoadingOverlay,
+                            }}
+                            componentsProps={{toolbar: {printOptions: {disableToolbarButton: true}}}}
+                            autoPageSize
+                            pagination
+                            disableSelectionOnClick
+                            loading={loading}
+                        />
+                    </Paper>
+                </Grid>
+            </Grid>
         </div>
     );
 };

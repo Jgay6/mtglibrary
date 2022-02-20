@@ -154,7 +154,13 @@ class Storage {
                 reject(error)
             })
         });
+    }
 
+    static getAll(): Promise<[Library, DeckModel[]]> {
+        return Promise.all([
+            Storage.getLibrary(),
+            Storage.getDecks()
+        ]);
     }
 
     static setLibrary(library: Library, callback?: ((err: any, value: Library | null) => void) | undefined): Promise<LibraryModel> {

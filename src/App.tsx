@@ -1,5 +1,7 @@
-import React from 'react';
-import { BrowserRouter as Router, Route,Routes } from "react-router-dom";
+import { Button, ListItem } from "@mui/material";
+import React, { useEffect, useRef, useState } from 'react';
+import { CSVLink } from "react-csv";
+import { Link, Route, Routes } from "react-router-dom";
 import './App.scss';
 import DeckDetails from "./components/DeckDetails/DeckDetails";
 import DeckList from "./components/DeckList/DeckList";
@@ -17,7 +19,6 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -25,12 +26,16 @@ import ListItemText from '@mui/material/ListItemText';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ClassIcon from '@mui/icons-material/Class';
+import DeckModel from "./model/Deck.model";
+import LibraryModel from "./model/Library.model";
+import { ExportUtility } from "./utility/Export.utility";
+import Storage from "./utility/Storage";
 
 function Copyright(props: any) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
+            <Link color="inherit" to="https://mui.com/">
                 MTG - Library management
             </Link>{' '}
             {new Date().getFullYear()}
@@ -47,7 +52,7 @@ interface AppBarProps extends MuiAppBarProps {
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
+})<AppBarProps>(({theme, open}) => ({
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
@@ -63,8 +68,8 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
+const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})(
+    ({theme, open}) => ({
         '& .MuiDrawer-paper': {
             position: 'relative',
             whiteSpace: 'nowrap',
@@ -93,96 +98,114 @@ const mdTheme = createTheme();
 
 function App() {
     const [open, setOpen] = React.useState(true);
+    const [library, setLibrary] = useState<LibraryModel>({cards: []} as LibraryModel);
+    const [decks, setDecks] = useState<DeckModel[]>(() => []);
+    const ref = useRef<any>();
+
     const toggleDrawer = () => {
         setOpen(!open);
     };
 
-    return (
-        <Router>
-            <ThemeProvider theme={mdTheme}>
-                <Box sx={{ display: 'flex' }}>
-                    <CssBaseline />
-                    <AppBar position="absolute" open={open}>
-                        <Toolbar sx={{pr: '24px'}}>
-                            <IconButton
-                                edge="start"
-                                color="inherit"
-                                aria-label="open drawer"
-                                onClick={toggleDrawer}
-                                sx={{
-                                    marginRight: '36px',
-                                    ...(open && { display: 'none' }),
-                                }}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <Typography
-                                component="h1"
-                                variant="h6"
-                                color="inherit"
-                                noWrap
-                                sx={{ flexGrow: 1 }}>
-                                Dashboard
-                            </Typography>
+    const downloadExport = () => {
+        Storage.getLibrary()
+            .then((libraryFetch) => {
+                setLibrary(libraryFetch);
+                Storage.getDecks()
+                    .then((decksFetch) => {
+                        setDecks(decksFetch);
+                        ref.current.link.click();
+                    });
+            });
+    }
 
-                        </Toolbar>
-                    </AppBar>
-                    <Drawer variant="permanent" open={open}>
-                        <Toolbar
+    return (
+        <ThemeProvider theme={mdTheme}>
+            <Box sx={{display: 'flex'}}>
+                <CssBaseline/>
+                <AppBar position="absolute" open={open}>
+                    <Toolbar sx={{pr: '24px'}}>
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={toggleDrawer}
                             sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'flex-end',
-                                px: [1],
-                            }}>
-                            <IconButton onClick={toggleDrawer}>
-                                <ChevronLeftIcon />
-                            </IconButton>
-                        </Toolbar>
-                        <Divider />
-                        <List component="nav">
-                            <ListItemButton component="a" href="/">
-                                <ListItemIcon>
-                                    <DashboardIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Library" />
-                            </ListItemButton>
-                            <ListItemButton  component="a" href="/decks">
-                                <ListItemIcon>
-                                    <ClassIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Decks" />
-                            </ListItemButton>
-                        </List>
-                    </Drawer>
-                    <Box
-                        component="main"
+                                marginRight: '36px',
+                                ...(open && {display: 'none'}),
+                            }}
+                        >
+                            <MenuIcon/>
+                        </IconButton>
+                        <Typography
+                            component="h1"
+                            variant="h6"
+                            color="inherit"
+                            noWrap
+                            sx={{flexGrow: 1}}>
+                            Dashboard
+                        </Typography>
+
+                    </Toolbar>
+                </AppBar>
+                <Drawer variant="permanent" open={open}>
+                    <Toolbar
                         sx={{
-                            backgroundColor: (theme) =>
-                                theme.palette.mode === 'light'
-                                    ? theme.palette.grey[100]
-                                    : theme.palette.grey[900],
-                            flexGrow: 1,
-                            height: '100vh',
-                            overflow: 'auto',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            px: [1],
                         }}>
-                        <Toolbar />
-                        <Container maxWidth="xl" sx={{ mt: 2, mb: 2 }}>
-                            <Grid container spacing={1}>
-                                <Grid item xs={12} md={12} lg={12}>
-                                    <Routes>
-                                        <Route path="/" element={<Library/>}/>
-                                        <Route path="/decks" element={<DeckList />}/>
-                                        <Route path="/decks/:deckName" element={<DeckDetails />}/>
-                                    </Routes>
-                                </Grid>
+                        <IconButton onClick={toggleDrawer}>
+                            <ChevronLeftIcon/>
+                        </IconButton>
+                    </Toolbar>
+                    <Divider/>
+                    <List component="nav">
+                        <ListItemButton component={Link} to="/">
+                            <ListItemIcon>
+                                <DashboardIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Library"/>
+                        </ListItemButton>
+                        <ListItemButton component={Link} to="/decks">
+                            <ListItemIcon>
+                                <ClassIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Decks"/>
+                        </ListItemButton>
+                        <ListItem >
+                            <Button  onClick={downloadExport}>Export All</Button>
+                            <CSVLink {...ExportUtility.exportAll(library, decks)} ref={ref}/>
+                        </ListItem>
+                    </List>
+                </Drawer>
+                <Box
+                    component="main"
+                    sx={{
+                        backgroundColor: (theme) =>
+                            theme.palette.mode === 'light'
+                                ? theme.palette.grey[100]
+                                : theme.palette.grey[900],
+                        flexGrow: 1,
+                        height: '100vh',
+                        overflow: 'auto',
+                    }}>
+                    <Toolbar/>
+                    <Container maxWidth="xl" sx={{mt: 2, mb: 2}}>
+                        <Grid container spacing={1}>
+                            <Grid item xs={12} md={12} lg={12}>
+                                <Routes>
+                                    <Route path="/" element={<Library/>}/>
+                                    <Route path="/decks" element={<DeckList/>}/>
+                                    <Route path="/decks/:deckName" element={<DeckDetails/>}/>
+                                </Routes>
                             </Grid>
-                            <Copyright sx={{ pt: 4 }} />
-                        </Container>
-                    </Box>
+                        </Grid>
+                        <Copyright sx={{pt: 4}}/>
+                    </Container>
                 </Box>
-            </ThemeProvider>
-        </Router>
+            </Box>
+        </ThemeProvider>
     );
 }
 

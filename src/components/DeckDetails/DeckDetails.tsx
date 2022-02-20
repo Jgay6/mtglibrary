@@ -5,7 +5,8 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { CSVLink } from "react-csv";
 import { useParams } from "react-router-dom";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card } from "scryfall-sdk";
@@ -13,6 +14,7 @@ import { CardModel } from "../../model/Card.model";
 import DeckModel from "../../model/Deck.model";
 import { CardUtility } from "../../utility/Card.utility";
 import { ChartUtility, ChartResult, DetailsResult } from "../../utility/Chart.utility";
+import { ExportUtility } from "../../utility/Export.utility";
 import Storage from "../../utility/Storage";
 import AutoComplete from "../Autocomplete/Autocomplete";
 import styles from "../DeckDetails/DeckDetails.module.scss";
@@ -28,6 +30,7 @@ const DeckDetails = (props: DeckDetailsProps) => {
     const [data, setData] = useState<CardModel[]>([]);
     const [dataChart, setDataChart] = useState<ChartResult[]>([]);
     const [dataDetails, setDataDetails] = useState<DetailsResult>({creature: 0, spell: 0, enchant: 0, land: 0});
+    const ref = useRef<any>();
 
     const sortCards = (cards: CardModel[]) => {
         cards.sort((t1, t2) => {
@@ -217,6 +220,18 @@ const DeckDetails = (props: DeckDetailsProps) => {
                             display: 'flex',
                             flexDirection: 'column',
                             ml: 2,
+                        }}
+                    >
+                        <Button onClick={() => ref.current.link.click()}>Export to CSV</Button>
+                        <CSVLink {...ExportUtility.exportDeck(deck)} ref={ref}/>
+                    </Paper>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            ml: 2,
+                            mt: 2,
                         }}
                     >
                         <Typography
