@@ -1,3 +1,4 @@
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { FormControl, FormHelperText, Input, InputLabel, List, ListItemButton, Paper, Button, Grid, ListItem } from "@mui/material";
 import React, { useEffect, useRef, useState } from 'react';
 import { CSVLink } from "react-csv";
@@ -106,7 +107,7 @@ const DeckList = (props: DeckListProps) => {
                                     key={i}
                                     secondaryAction={
                                         <div>
-                                            <Button onClick={() => refs.current[i].link.click()}>Export to CSV</Button>
+                                            <Button onClick={() => refs.current[i].link.click()}><FileDownloadIcon /> Export to CSV</Button>
                                             <CSVLink {...ExportUtility.exportDeck(deck)} ref={addToRefs}/>
                                             <Button color="error" onClick={() => handleClickOpen(deck)}>Delete</Button>
                                         </div>

@@ -1,10 +1,12 @@
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { Button, ListItem } from "@mui/material";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { CSVLink } from "react-csv";
 import { Link, Route, Routes } from "react-router-dom";
 import './App.scss';
 import DeckDetails from "./components/DeckDetails/DeckDetails";
 import DeckList from "./components/DeckList/DeckList";
+import ImportPage from "./components/ImportPage/ImportPage";
 import Library from "./components/Library/Library";
 
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
@@ -21,6 +23,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import MenuIcon from '@mui/icons-material/Menu';
 import ListItemButton from '@mui/material/ListItemButton';
+import PublishIcon from '@mui/icons-material/Publish';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -173,8 +176,14 @@ function App() {
                             </ListItemIcon>
                             <ListItemText primary="Decks"/>
                         </ListItemButton>
+                        <ListItemButton component={Link} to="/import">
+                            <ListItemIcon>
+                                <PublishIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Import"/>
+                        </ListItemButton>
                         <ListItem >
-                            <Button  onClick={downloadExport}>Export All</Button>
+                            <Button onClick={downloadExport}><FileDownloadIcon /> Export All</Button>
                             <CSVLink {...ExportUtility.exportAll(library, decks)} ref={ref}/>
                         </ListItem>
                     </List>
@@ -196,6 +205,7 @@ function App() {
                             <Grid item xs={12} md={12} lg={12}>
                                 <Routes>
                                     <Route path="/" element={<Library/>}/>
+                                    <Route path="/import" element={<ImportPage/>}/>
                                     <Route path="/decks" element={<DeckList/>}/>
                                     <Route path="/decks/:deckName" element={<DeckDetails/>}/>
                                 </Routes>

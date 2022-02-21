@@ -1,35 +1,39 @@
 import DeckModel from "../model/Deck.model";
 import LibraryModel from "../model/Library.model";
+import Storage from "./Storage";
 
-interface IDeck {
+export interface IDeck {
     deckName: string;
     cardId: string;
     cardNumber: number;
+    cardName: string;
 }
-const headerDeck = [
+export const headerDeck = [
     { label: "deckName", key: "deckName" },
     { label: "cardId", key: "cardId" },
     { label: "cardName", key: "cardName" },
     { label: "cardNumber", key: "cardNumber" },
 ];
 
-interface Ilibrary {
+export interface Ilibrary {
     cardId: string;
     cardNumber: number;
+    cardName: string;
 }
-const headerLibrary = [
+export const headerLibrary = [
     { label: "cardId", key: "cardId" },
     { label: "cardName", key: "cardName" },
     { label: "cardNumber", key: "cardNumber" },
 ];
 
-interface IAll {
+export interface IAll {
     type: string;
     deckName?: string;
     cardId: string;
     cardNumber: number;
+    cardName: string;
 }
-const headerAll = [
+export const headerAll = [
     { label: "type", key: "type" },
     { label: "deckName", key: "deckName" },
     { label: "cardId", key: "cardId" },
@@ -66,7 +70,7 @@ export class ExportUtility {
         };
     }
 
-    static exportAll(library: LibraryModel, decks: DeckModel[]) {
+    static exportAll(library: LibraryModel, decks: DeckModel[]): {data: IAll[], headers: {label: string, key: string}[], filename: string} {
         let data: IAll[] = [];
 
         for(let card of library.cards) {

@@ -1,6 +1,7 @@
 import { Button, Grid, LinearProgress, Paper, Tooltip, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from 'react';
 import { DataGrid, GridColDef, GridOverlay, GridValueGetterParams } from '@mui/x-data-grid';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { CSVLink } from "react-csv";
 import { Card } from "scryfall-sdk";
 import { CardModel } from "../../model/Card.model";
@@ -183,7 +184,8 @@ const Library = (props: LibraryProps) => {
                             flexDirection: 'column',
                         }}
                     >
-                        <Button onClick={() => ref.current.link.click()}>Export to CSV</Button>
+
+                        <Button onClick={() => ref.current.link.click()}><FileDownloadIcon /> Export to CSV</Button>
                         <CSVLink {...ExportUtility.exportLibrary(library)} ref={ref}/>
                     </Paper>
                 </Grid>

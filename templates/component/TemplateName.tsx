@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './TemplateName.module.scss';
+import styles from './TemplateName.module.scss';
 
 
 interface ITemplateNameProps {
@@ -9,9 +9,10 @@ const TemplateName = (props: ITemplateNameProps) => {
     const [name] = useState('TemplateName');
 
     return (
-        <div className="TemplateName">
+        <div className={style.TemplateName}>
             {name} Component
-        </div>);
+        </div>
+    );
 
 }
 

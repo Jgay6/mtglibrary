@@ -1,3 +1,4 @@
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { Button, Grid, Paper, Tooltip as ToolTip, Typography } from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -222,7 +223,7 @@ const DeckDetails = (props: DeckDetailsProps) => {
                             ml: 2,
                         }}
                     >
-                        <Button onClick={() => ref.current.link.click()}>Export to CSV</Button>
+                        <Button onClick={() => ref.current.link.click()}><FileDownloadIcon /> Export to CSV</Button>
                         <CSVLink {...ExportUtility.exportDeck(deck)} ref={ref}/>
                     </Paper>
                     <Paper
