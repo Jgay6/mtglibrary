@@ -9,7 +9,7 @@ const TemplateName = (props: ITemplateNameProps) => {
     const [name] = useState('TemplateName');
 
     return (
-        <div className={style.TemplateName}>
+        <div className={styles.TemplateName}>
             {name} Component
         </div>
     );

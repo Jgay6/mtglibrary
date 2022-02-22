@@ -19,6 +19,7 @@ import { ExportUtility } from "../../utility/Export.utility";
 import Storage from "../../utility/Storage";
 import AutoComplete from "../Autocomplete/Autocomplete";
 import styles from "../DeckDetails/DeckDetails.module.scss";
+import ManaCost from "../ManaCost/ManaCost";
 
 interface DeckDetailsProps {
 }
@@ -29,8 +30,9 @@ const DeckDetails = (props: DeckDetailsProps) => {
 
     const [deck, setDeck] = useState<DeckModel>({name: name, cards: [], side: []});
     const [data, setData] = useState<CardModel[]>([]);
+    const [dataSide, setDataSide] = useState<CardModel[]>([]);
     const [dataChart, setDataChart] = useState<ChartResult[]>([]);
-    const [dataDetails, setDataDetails] = useState<DetailsResult>({creature: 0, spell: 0, enchant: 0, land: 0});
+    const [dataDetails, setDataDetails] = useState<DetailsResult>({cards: {creature: 0, spell: 0, enchant: 0, land: 0}, side: {creature: 0, spell: 0, enchant: 0, land: 0}});
     const ref = useRef<any>();
 
     const sortCards = (cards: CardModel[]) => {
@@ -44,31 +46,43 @@ const DeckDetails = (props: DeckDetailsProps) => {
     }
 
     const addCard = (card: Card) => {
-        if(data !== null) {
+        add(data, setData, card);
+    }
+    const addCardSide = (card: Card) => {
+        add(dataSide, setDataSide, card);
+    }
+    const add = (models: CardModel[], func: { (value: React.SetStateAction<CardModel[]>): void; (arg0: CardModel[]): void; }, card: Card) => {
+        if (models !== null) {
             let cardModel = card as CardModel;
-            let indexFound = data.map(c => c.id).indexOf(card.id);
+            let indexFound = models.map(c => c.id).indexOf(card.id);
 
-            if(indexFound > -1) {
-                cardModel = data[indexFound];
+            if (indexFound > -1) {
+                cardModel = models[indexFound];
                 cardModel.number++;
-                setData(data);
+                func(models);
             } else {
                 cardModel.number = 1;
-                let tmp = [...data, cardModel];
+                let tmp = [...models, cardModel];
                 sortCards(tmp);
-                setData(tmp);
+                func(tmp);
             }
         }
     }
 
     const decrease = (id: string) => {
-        if(data !== null) {
-            let indexFound = data.map(c => c.id).indexOf(id);
+        decr(data, setData, id);
+    }
+    const decreaseSide = (id: string) => {
+        decr(dataSide, setDataSide, id);
+    }
+    const decr = (models: CardModel[], func: { (value: React.SetStateAction<CardModel[]>): void; (arg0: CardModel[]): void; }, id: string) => {
+        if(models !== null) {
+            let indexFound = models.map(c => c.id).indexOf(id);
             if(indexFound > -1) {
-                let card = data[indexFound];
+                let card = models[indexFound];
                 card.number--;
                 if(card.number <= 0) {
-                    setData((prevrow) => {
+                    func((prevrow) => {
                         const rowToDeleteIndex = prevrow.findIndex(x => x.id === id);
                         return [
                             ...prevrow.slice(0, rowToDeleteIndex),
@@ -76,17 +90,23 @@ const DeckDetails = (props: DeckDetailsProps) => {
                         ];
                     });
                 } else {
-                    setData(Object.assign([], data));
+                    func(Object.assign([], models));
                 }
             }
         }
     }
 
     const increase = (id: string) => {
-        if(data !== null) {
-            let indexFound = data.map(c => c.id).indexOf(id);
+        incr(data, setData, id);
+    }
+    const increaseSide = (id: string) => {
+        incr(dataSide, setDataSide, id);
+    }
+    const incr = (models: CardModel[], func: { (value: React.SetStateAction<CardModel[]>): void; (arg0: CardModel[]): void; }, id: string) => {
+        if(models !== null) {
+            let indexFound = models.map(c => c.id).indexOf(id);
             if(indexFound > -1) {
-                setData((prevrow) => {
+                func((prevrow) => {
                     let card = prevrow[indexFound];
                     card.number++;
                     return Object.assign([], prevrow);
@@ -108,18 +128,34 @@ const DeckDetails = (props: DeckDetailsProps) => {
                     if (name1 < name2) { return -1; }
                     return 0;
                 });
+                value.side.sort((t1, t2) => {
+                    const name1 = t1.name.toLowerCase();
+                    const name2 = t2.name.toLowerCase();
+                    if (name1 > name2) { return 1; }
+                    if (name1 < name2) { return -1; }
+                    return 0;
+                });
                 setDeck(value);
                 setData(value.cards);
+                setDataSide(value.side);
             })
     }, []);
 
     useEffect(() => {
         deck.cards = data;
-        Storage.setDeck(deck);
+        Storage.saveCardsDeck(deck, data);
         let [chartResult, detailsResult] = ChartUtility.getData(deck)
         setDataChart(chartResult);
         setDataDetails(detailsResult);
     }, [data]);
+
+    useEffect(() => {
+        deck.side = dataSide;
+        Storage.saveCardsSide(deck, dataSide);
+        let [chartResult, detailsResult] = ChartUtility.getData(deck)
+        setDataChart(chartResult);
+        setDataDetails(detailsResult);
+    }, [dataSide]);
 
     return (
         <div className={styles.DeckDetails}>
@@ -139,7 +175,7 @@ const DeckDetails = (props: DeckDetailsProps) => {
                             color="inherit"
                             noWrap
                             sx={{flexGrow: 1}}>
-                            Deck management of {deckName} ({CardUtility.calculateNbCard(deck)}/60 + {deck.side.length})
+                            Deck management of {deckName} ({CardUtility.calculateNbCard(deck.cards)}/60 + {CardUtility.calculateNbCard(deck.side) || 0})
                         </Typography>
                     </Paper>
                     <Paper
@@ -150,7 +186,7 @@ const DeckDetails = (props: DeckDetailsProps) => {
                             mb: 2
                         }}
                     >
-                        <AutoComplete addCard={addCard}/>
+                        <AutoComplete addCard={addCard} placeholder={"Add card to deck"}/>
                     </Paper>
                     <Paper
                         sx={{
@@ -197,7 +233,7 @@ const DeckDetails = (props: DeckDetailsProps) => {
                                                 </ToolTip>
                                             </TableCell>
                                             <TableCell component="th" scope="row">
-                                                {row.mana_cost}
+                                                <ManaCost cost={row.mana_cost} />
                                             </TableCell>
                                             <TableCell component="th" scope="row">
                                                 {row.type_line}
@@ -206,6 +242,78 @@ const DeckDetails = (props: DeckDetailsProps) => {
                                                 <Button variant="contained" size="small" onClick={() => decrease(row.id)} sx={{mr: 2}}>-1</Button>
                                                 {row.number}
                                                 <Button variant="contained" size="small" onClick={() => increase(row.id)} sx={{ml: 2}}>+1</Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Paper>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            mb: 2,
+                            mt: 2
+                        }}
+                    >
+                        <AutoComplete addCard={addCardSide} placeholder={"Add card to side"}/>
+                    </Paper>
+                    <Paper
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Mana Cost</TableCell>
+                                        <TableCell>Type</TableCell>
+                                        <TableCell>Number</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {dataSide.length === 0 &&
+                                    <TableRow
+                                        key={0}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                      <TableCell component="th" scope="row">
+                                        No rows
+                                      </TableCell>
+                                    </TableRow>
+                                    }
+                                    {dataSide.map((row) => (
+                                        <TableRow
+                                            key={row.name}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                <ToolTip
+                                                    title={
+                                                        <React.Fragment>
+                                                            <img src={row.image_uris?.small} />
+                                                        </React.Fragment>
+                                                    }
+                                                >
+                                                    <Typography color="inherit">{row.name}</Typography>
+                                                </ToolTip>
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                <ManaCost cost={row.mana_cost} />
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {row.type_line}
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                <Button variant="contained" size="small" onClick={() => decreaseSide(row.id)} sx={{mr: 2}}>-1</Button>
+                                                {row.number}
+                                                <Button variant="contained" size="small" onClick={() => increaseSide(row.id)} sx={{ml: 2}}>+1</Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -243,8 +351,8 @@ const DeckDetails = (props: DeckDetailsProps) => {
                             sx={{flexGrow: 1}}>
                             Cost by type
                         </Typography>
-                        <ResponsiveContainer width="185%" aspect={3}>
-                            <BarChart data={dataChart} margin={{right: 300}}>
+                        <ResponsiveContainer width="100%" aspect={2}>
+                            <BarChart data={dataChart} margin={{right: 20, left: -20}}>
                                 <CartesianGrid strokeDasharray="3 3"/>
                                 <XAxis dataKey="name"/>
                                 <YAxis/>
@@ -273,10 +381,22 @@ const DeckDetails = (props: DeckDetailsProps) => {
                             sx={{flexGrow: 1}}>
                             Details
                         </Typography>
-                        <p>Land: {dataDetails.land}</p>
-                        <p>Creature: {dataDetails.creature}</p>
-                        <p>Spell: {dataDetails.spell}</p>
-                        <p>Enchant: {dataDetails.enchant}</p>
+                        <p>
+                            <div>Land</div>
+                            <div>Deck: {dataDetails.cards.land} / side: {dataDetails.side.land}</div>
+                        </p>
+                        <p>
+                            <div>Creature</div>
+                            <div>Deck: {dataDetails.cards.creature} / side: {dataDetails.side.creature}</div>
+                        </p>
+                        <p>
+                            <div>Spell</div>
+                            <div>Deck: {dataDetails.cards.spell} / side: {dataDetails.side.spell}</div>
+                        </p>
+                        <p>
+                            <div>Enchant</div>
+                            <div>Deck: {dataDetails.cards.enchant} / side: {dataDetails.side.enchant}</div>
+                        </p>
                     </Paper>
                 </Grid>
             </Grid>

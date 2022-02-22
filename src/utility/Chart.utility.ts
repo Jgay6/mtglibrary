@@ -13,6 +13,11 @@ export interface ChartResult {
 }
 
 export interface DetailsResult {
+    cards: DetailsResultCard;
+    side: DetailsResultCard;
+}
+
+export interface DetailsResultCard {
     creature: number;
     spell: number;
     enchant: number;
@@ -31,7 +36,7 @@ export class ChartUtility {
         });
 
         let chartResults: ChartResult[] = [];
-        let detailsResults: DetailsResult = {creature: 0, spell: 0, enchant: 0, land: 0};
+        let detailsResults: DetailsResult = {cards: {creature: 0, spell: 0, enchant: 0, land: 0}, side: {creature: 0, spell: 0, enchant: 0, land: 0}};
         for(let key of Object.keys(data)) {
             let tmp = {name: 'Cost ' + key, creature: 0, spell: 0, enchant: 0} as ChartResult;
 
@@ -39,18 +44,18 @@ export class ChartUtility {
             for(let card of row) {
                 if(this.isCreature(card)) {
                     tmp.creature += card.number;
-                    detailsResults.creature += card.number;
+                    detailsResults.cards.creature += card.number;
                 }
                 if(this.isSpell(card)) {
                     tmp.spell += card.number;
-                    detailsResults.spell += card.number;
+                    detailsResults.cards.spell += card.number;
                 }
                 if(this.isEnchant(card)) {
                     tmp.enchant += card.number;
-                    detailsResults.enchant += card.number;
+                    detailsResults.cards.enchant += card.number;
                 }
                 if(this.isLand(card)) {
-                    detailsResults.land += card.number;
+                    detailsResults.cards.land += card.number;
                 }
             }
 
@@ -58,6 +63,20 @@ export class ChartUtility {
                 chartResults.push(tmp);
             }
         }
+        deck.side.forEach((card) => {
+            if(this.isCreature(card)) {
+                detailsResults.side.creature += card.number;
+            }
+            if(this.isSpell(card)) {
+                detailsResults.side.spell += card.number;
+            }
+            if(this.isEnchant(card)) {
+                detailsResults.side.enchant += card.number;
+            }
+            if(this.isLand(card)) {
+                detailsResults.side.land += card.number;
+            }
+        });
         return [chartResults, detailsResults];
     }
 
@@ -78,7 +97,6 @@ export class ChartUtility {
     static isSpell(card: CardModel) {
         return (
             card.type_line.toLowerCase().indexOf('instant') > -1 ||
-            card.type_line.toLowerCase().indexOf('enchantment') > -1 ||
             card.type_line.toLowerCase().indexOf('sorcery') > -1 ||
             card.type_line.toLowerCase().indexOf('tribal') > -1 ||
             card.type_line.toLowerCase().indexOf('emblem') > -1

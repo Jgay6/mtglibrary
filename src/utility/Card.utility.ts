@@ -1,5 +1,4 @@
 import { CardModel } from "../model/Card.model";
-import DeckModel from "../model/Deck.model";
 
 export class CardUtility {
     static displayCost(manaCost: string | null | undefined) {
@@ -22,9 +21,9 @@ export class CardUtility {
         return (cardNumber >= (used + number));
     }
 
-    static calculateNbCard = (deck: DeckModel) => {
+    static calculateNbCard = (cards: CardModel[]) => {
         let result = 0;
-        deck.cards.forEach(card => result += card.number);
+        cards.forEach(card => result += card.number);
         return result;
     }
 }

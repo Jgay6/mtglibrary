@@ -170,6 +170,40 @@ class Storage {
     static setDeck(deck: DeckModel, callback?: ((err: any, value: DeckModel | null) => void) | undefined): Promise<DeckModel> {
         return localForage.setItem('deck.' + deck.name, deck, callback);
     }
+    static saveCardsDeck(deck: DeckModel, cards: CardModel[]): Promise<DeckModel> {
+        return new Promise<DeckModel>((resolve, reject) => {
+            this.getDeck(deck.name)
+            .then((deck: DeckModel) => {
+                if (deck === null) {
+                    reject('Deck not found');
+                }
+                deck.cards = cards;
+                this.setDeck(deck);
+                resolve(deck);
+            })
+            .catch(reason => {
+                console.error(reason);
+                reject(reason);
+            });
+        });
+    }
+    static saveCardsSide(deck: DeckModel, cards: CardModel[]): Promise<DeckModel> {
+        return new Promise<DeckModel>((resolve, reject) => {
+            this.getDeck(deck.name)
+            .then((deck: DeckModel) => {
+                if (deck === null) {
+                    reject('Deck not found');
+                }
+                deck.side = cards;
+                this.setDeck(deck);
+                resolve(deck);
+            })
+            .catch(reason => {
+                console.error(reason);
+                reject(reason);
+            });
+        });
+    }
 
     static removeDeck(deckName: string): Promise<void> {
         return localForage.removeItem('deck.' + deckName);

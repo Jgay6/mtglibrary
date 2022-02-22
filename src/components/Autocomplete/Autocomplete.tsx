@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { v4 as uuid } from 'uuid';
+
 import { Grid, Tooltip, Typography } from "@mui/material";
 
 import TextField from '@mui/material/TextField';
@@ -11,6 +13,7 @@ import { Card } from "scryfall-sdk";
 import * as Scry from "scryfall-sdk";
 
 interface IAutocompleteProps {
+    placeholder: string;
     addCard:  (card: Card) => void;
 }
 
@@ -103,7 +106,7 @@ const AutoComplete = (autoCompleteProps: IAutocompleteProps) => {
     return (
         <div className="Autocomplete">
             <Autocomplete
-                id="google-map-demo"
+                id={uuid()}
                 sx={{ width: 300 }}
                 getOptionLabel={(option) =>
                     typeof option === 'string' ? option : option.name
@@ -122,7 +125,7 @@ const AutoComplete = (autoCompleteProps: IAutocompleteProps) => {
                     setInputValue(newInputValue);
                 }}
                 renderInput={(params) => (
-                    <TextField {...params} label="Add card to library" fullWidth />
+                    <TextField {...params} label={autoCompleteProps.placeholder} fullWidth />
                 )}
                 renderOption={(props, option) => {
                     return (

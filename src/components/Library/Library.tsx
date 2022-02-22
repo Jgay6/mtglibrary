@@ -10,6 +10,7 @@ import LibraryModel from "../../model/Library.model";
 import { ExportUtility } from "../../utility/Export.utility";
 import Storage from "../../utility/Storage";
 import AutoComplete from "../Autocomplete/Autocomplete";
+import ManaCost from "../ManaCost/ManaCost";
 import styles from './Library.module.scss';
 
 function CustomLoadingOverlay() {
@@ -129,8 +130,9 @@ const Library = (props: LibraryProps) => {
             field: 'mana_cost',
             headerName: 'Mana Cost',
             width: 150,
-            valueGetter: (params: GridValueGetterParams) =>
-                `${params.row.mana_cost || ''}`,
+            renderCell: (params: GridValueGetterParams) => (
+                <ManaCost cost={params.row.mana_cost || ''} />
+            )
         },
         {
             field: 'estimated_price',
@@ -173,7 +175,7 @@ const Library = (props: LibraryProps) => {
                             flexDirection: 'column',
                         }}
                     >
-                        <AutoComplete addCard={addCard}/>
+                        <AutoComplete addCard={addCard} placeholder={"Add card to library"}/>
                     </Paper>
                 </Grid>
                 <Grid item xs={12} md={3} lg={3}>
