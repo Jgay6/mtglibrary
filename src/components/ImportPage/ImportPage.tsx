@@ -67,6 +67,7 @@ const ImportPage = (props: IImportPageProps) => {
 
         let decksIds: Map<string, CardIdentifier[]> = new Map();
         let decksNumber: Map<string, Map<string, number>> = new Map();
+        let sideIds:  Map<string, CardIdentifier[]> = new Map();
 
         uploadDeckFile?.data.forEach((row: IDeck) => {
             let deckName = row.deckName || '';
@@ -78,6 +79,12 @@ const ImportPage = (props: IImportPageProps) => {
             let deckNumber = decksNumber.get(deckName) || new Map();
             deckNumber.set(row.cardId, row.cardNumber);
             decksNumber.set(deckName, deckNumber);
+
+            if(!row.cardDeck) {
+                let side = sideIds.get(deckName) || [];
+                side.push(row.cardId as CardIdentifier);
+                sideIds.set(deckName, side);
+            }
         });
 
         decksIds.forEach((deckIds, deckName) => {
@@ -92,12 +99,17 @@ const ImportPage = (props: IImportPageProps) => {
                 deckCards.forEach((card: Card) => {
                     let cardModel = card as CardModel;
                     cardModel.number = decksNumber.get(deckName)?.get(cardModel.id) || 1;
-                    deck.cards.push(cardModel);
+
+                    if((sideIds.get(deckName)?.indexOf(cardModel.id as CardIdentifier) || -1) > -1) {
+                        deck.cards.push(cardModel);
+                    } else {
+                        deck.side.push(cardModel);
+                    }
                 });
 
                 Storage.setDeck(deck);
 
-                setAllDecksCardsUploaded((allDecksCardsUploaded || 0) + deck.cards.length);
+                setAllDecksCardsUploaded((allDecksCardsUploaded || 0) + deck.cards.length + deck.side.length);
                 setAllDecksUploaded((allDecksUploaded || 0) + 1);
             });
         });
@@ -113,6 +125,7 @@ const ImportPage = (props: IImportPageProps) => {
 
         let decksIds: Map<string, CardIdentifier[]> = new Map();
         let decksNumber: Map<string, Map<string, number>> = new Map();
+        let sideIds:  Map<string, CardIdentifier[]> = new Map();
 
         uploadAllFile?.data.forEach((row: IAll) => {
             if (row.type === 'library') {
@@ -128,6 +141,12 @@ const ImportPage = (props: IImportPageProps) => {
                 let deckNumber = decksNumber.get(deckName) || new Map();
                 deckNumber.set(row.cardId, row.cardNumber);
                 decksNumber.set(deckName, deckNumber);
+
+                if(!row.cardDeck) {
+                    let side = sideIds.get(deckName) || [];
+                    side.push(row.cardId as CardIdentifier);
+                    sideIds.set(deckName, side);
+                }
             }
         });
 
@@ -160,12 +179,17 @@ const ImportPage = (props: IImportPageProps) => {
                 deckCards.forEach((card: Card) => {
                     let cardModel = card as CardModel;
                     cardModel.number = decksNumber.get(deckName)?.get(cardModel.id) || 1;
-                    deck.cards.push(cardModel);
+
+                    if((sideIds.get(deckName)?.indexOf(cardModel.id as CardIdentifier) || -1) > -1) {
+                        deck.cards.push(cardModel);
+                    } else {
+                        deck.side.push(cardModel);
+                    }
                 });
 
                 Storage.setDeck(deck);
 
-                setAllDecksCardsUploaded((allDecksCardsUploaded || 0) + deck.cards.length);
+                setAllDecksCardsUploaded((allDecksCardsUploaded || 0) + deck.cards.length + deck.side.length);
                 setAllDecksUploaded((allDecksUploaded || 0) + 1);
             });
         });

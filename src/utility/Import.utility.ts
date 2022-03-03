@@ -1,8 +1,8 @@
 import { ResultAll, ResultDeck, Resultlibrary } from "../components/CSVReader/CSVReader";
 
 const libraryKeys = ['cardId', 'cardNumber', 'cardName'];
-const deckKeys = ['deckName', 'cardId', 'cardNumber', 'cardName'];
-const allKeys = ['type', 'deckName', 'cardId', 'cardNumber', 'cardName'];
+const deckKeys = ['deckName', 'cardId', 'cardNumber', 'cardName', 'cardDeck'];
+const allKeys = ['type', 'deckName', 'cardId', 'cardNumber', 'cardName', 'cardDeck'];
 
 export class ImportUtility {
     static library (data: Resultlibrary) {

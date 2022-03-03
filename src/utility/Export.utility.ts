@@ -1,18 +1,19 @@
 import DeckModel from "../model/Deck.model";
 import LibraryModel from "../model/Library.model";
-import Storage from "./Storage";
 
 export interface IDeck {
     deckName: string;
     cardId: string;
     cardNumber: number;
     cardName: string;
+    cardDeck: boolean;
 }
 export const headerDeck = [
     { label: "deckName", key: "deckName" },
     { label: "cardId", key: "cardId" },
     { label: "cardName", key: "cardName" },
     { label: "cardNumber", key: "cardNumber" },
+    { label: "cardDeck", key: "cardDeck" },
 ];
 
 export interface Ilibrary {
@@ -32,6 +33,7 @@ export interface IAll {
     cardId: string;
     cardNumber: number;
     cardName: string;
+    cardDeck: boolean;
 }
 export const headerAll = [
     { label: "type", key: "type" },
@@ -39,6 +41,7 @@ export const headerAll = [
     { label: "cardId", key: "cardId" },
     { label: "cardName", key: "cardName" },
     { label: "cardNumber", key: "cardNumber" },
+    { label: "cardDeck", key: "cardDeck" },
 ];
 
 export class ExportUtility {
@@ -46,7 +49,11 @@ export class ExportUtility {
         let data: IDeck[] = [];
 
         for(let card of deck.cards) {
-            data.push({deckName: deck.name, cardId: card.id, cardName: card.name, cardNumber: card.number} as IDeck);
+            data.push({deckName: deck.name, cardId: card.id, cardName: card.name, cardNumber: card.number, cardDeck: true} as IDeck);
+        }
+
+        for(let card of deck.side) {
+            data.push({deckName: deck.name, cardId: card.id, cardName: card.name, cardNumber: card.number, cardDeck: false} as IDeck);
         }
 
         return {

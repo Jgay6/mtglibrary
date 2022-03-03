@@ -9,8 +9,6 @@ L
 ,.idea/inspectionProfiles/Project_Default.xml,4\9\496a238a6afa168dbaf6efd37bb459331589579c
 G
 generate-react-cli.json,f\8\f882fb2e3dec46195ef9eec51e023a9c9c2e639b
-G
-src/model/Deck.model.ts,b\9\b9b35e0e4ab2f2b241469fd434759a9833e300a7
 J
 src/model/Library.model.ts,7\5\75c99fc9c6c67ecb24dae686bdf717f83252156c
 9
