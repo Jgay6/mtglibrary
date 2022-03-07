@@ -11,6 +11,7 @@ import throttle from 'lodash/throttle';
 import './Autocomplete.module.scss';
 import { Card } from "scryfall-sdk";
 import * as Scry from "scryfall-sdk";
+import styles from "../TableDeck/TableDeck.module.scss";
 
 interface IAutocompleteProps {
     placeholder: string;
@@ -27,7 +28,7 @@ const generateNameRender = (option: Card) => {
         <Tooltip
             title={
                 <React.Fragment>
-                    <img src={option.image_uris?.small}/>
+                    <img src={option.image_uris?.normal} className={styles.Thumb}/>
                 </React.Fragment>
             }
         >

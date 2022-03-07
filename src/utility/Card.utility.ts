@@ -26,4 +26,12 @@ export class CardUtility {
         cards.forEach(card => result += card.number);
         return result;
     }
+
+    static sortCards = (t1: CardModel, t2: CardModel) => {
+        const name1 = t1.name.toLowerCase();
+        const name2 = t2.name.toLowerCase();
+        if (name1 > name2) { return 1; }
+        if (name1 < name2) { return -1; }
+        return 0;
+    }
 }

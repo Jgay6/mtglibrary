@@ -115,7 +115,7 @@ const DeckList = (props: DeckListProps) => {
                                     disablePadding
                                 >
                                     <ListItemButton component={Link} to={'/decks/' + deck.name}>
-                                        {deck.name} ({CardUtility.calculateNbCard(deck.cards)}/60 + {CardUtility.calculateNbCard(deck.side) || 0})
+                                        {deck.name} ({CardUtility.calculateNbCard(deck.cards)}/60 + {CardUtility.calculateNbCard(deck.side) || 0}/15)
                                     </ListItemButton>
                                 </ListItem>
                             ))}

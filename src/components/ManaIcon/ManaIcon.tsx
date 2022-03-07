@@ -9,9 +9,9 @@ interface IManaIconProps {
 const ManaIcon = (props: IManaIconProps) => {
 
     return (
-        <div className={styles.ManaIcon}>
-            <div className={styles['card-symbol-' + props.mana]} />
-        </div>
+        <span className={styles.ManaIcon}>
+            <span className={styles['card-symbol-' + props.mana]} />
+        </span>
     );
 
 }

@@ -4,7 +4,6 @@ import React, { useRef, useState } from 'react';
 import { CSVLink } from "react-csv";
 import { Link, Route, Routes } from "react-router-dom";
 import './App.scss';
-import DeckDetails from "./components/DeckDetails/DeckDetails";
 import DeckList from "./components/DeckList/DeckList";
 import ImportPage from "./components/ImportPage/ImportPage";
 import Library from "./components/Library/Library";
@@ -29,6 +28,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ClassIcon from '@mui/icons-material/Class';
+import TableDeck from "./components/TableDeck/TableDeck";
 import DeckModel from "./model/Deck.model";
 import LibraryModel from "./model/Library.model";
 import { ExportUtility } from "./utility/Export.utility";
@@ -207,7 +207,7 @@ function App() {
                                     <Route path="/" element={<Library/>}/>
                                     <Route path="/import" element={<ImportPage/>}/>
                                     <Route path="/decks" element={<DeckList/>}/>
-                                    <Route path="/decks/:deckName" element={<DeckDetails/>}/>
+                                    <Route path="/decks/:deckName" element={<TableDeck/>}/>
                                 </Routes>
                             </Grid>
                         </Grid>

@@ -29,11 +29,11 @@ const ManaCost = (props: IManaCostProps) => {
     }, []);
 
     return (
-        <div className={styles.ManaCost}>
+        <>
             {manas?.map((mana, index) =>
                 <ManaIcon mana={mana} key={index} />
             )}
-        </div>
+        </>
     );
 
 }
